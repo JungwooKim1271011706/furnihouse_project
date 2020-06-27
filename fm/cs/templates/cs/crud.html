@@ -1,0 +1,107 @@
+{% extends 'cs/base.html' %}
+{% load static %}
+{% block title %}CS 요청리스트{% endblock %}
+
+{% if user.is_authenticated %}
+{% block content %}
+    <form id="addRequest"action="">
+        {% csrf_token %}
+        <div class="form-group">
+            <input class = "form-control" type="text" name = "name" placeholder="고객명" required>
+            <input class = "form-control" type="text" name = "address" placeholder="주소" required>
+            <input class = "form-control" type="text" name = "phone_number" placeholder="수취인휴대폰" required>
+            <input class = "form-control" type="text" name = "text" placeholder="클레임 상세내역" required>
+        </div>
+        <button tyep="submit">등록하기</button>
+    </form>
+
+    <div>
+        <h3>CS 요청내역(총 {{request_datas.count}} 건 있습니다.)</h3>
+        <table id="request_table">
+            <tr>
+            <th>작성자</th>
+            <th>고객명</th>
+            <th>주소</th>
+            <th>연락처</th>
+            <th>클레임 내용</th>
+            <th>작성일자</th>
+            </tr>
+            {% if request_datas %}
+            {% for request_data in request_datas %}
+                <tr id="request_data-{{request_data.id}}">
+                    <td name="author">{{request_data.author}}</td>
+                    <td name="name">{{request_data.name}}</td>
+                    <td name="address">{{request_data.address}}</td>
+                    <td name="phone_number">{{request_data.phone_number}}</td>
+                    <td name="text">{{request_data.text|linebreaksbr}}</td>
+                    <td name="created_date">{{request_data.created_date}}</td>
+                        <td>
+                            <button onclick="edit_request_data('{{request_data.id}}')">수정하기</button>
+                        </td>
+                        <td>
+                            <button onclick="delete_request_data('{{request_data.id}}')">삭제하기</button>
+                        </td>
+                </tr>
+            {% endfor %}
+            {% else %}
+                클레임 내역이 없습니다.
+            {% endif %}
+        </table>
+    </div>
+    {% endblock %} 
+    {% block javascript %}
+    <script>
+        // Create Django Ajax Call
+        $("form#addRequest").submit(function(){
+            var nameinput = $('input[name="name"]').val().trim();
+            var addressinput = $('input[name="address"]').val().trim();
+            var phone_numberinput = $('input[name="phone_number"]').val().trim();
+            var textinput = $('input[name="text"]').val().trim();
+            if (nameinput && addressinput && phone_numberinput && textinput){
+                //Create Ajax Call
+                $.ajax({
+                    url : '{% url "crud_ajax_create" %}',
+                    data : {
+                        'name' : nameinput,
+                        'address' : addressinput,
+                        'phone_number' : phone_numberinput,
+                        'text' : textinput,
+                    },
+                    dataType : 'json',
+                    success : function(data){
+                        if(data.request_data){
+                            appendtorequesttable(data.request_data);
+                        }
+                    }
+                });
+            }else{
+                alert("모든 필드의 값이 찼습니다.");
+            }
+            
+            })
+            
+            function appendtorequesttable(request_data){
+                $("#request_table>tbody:last-child").append(`
+                    <tr id="request_data${request_data.id}">
+                    <td name="author">${request_data.author}</td>
+                        <td name="name">${request_data.name}</td>
+                        <td name="address">${request_data.address}</td>
+                        <td name="phone_number">${request_data.phone_number}</td>
+                        <td name="text">${request_data.text}</td>
+                        <td name="created_date">${request_data.created_date}</td>
+                        <td>
+                            <button onclick="edit_request_data({{request_data.id}})">수정하기</button>
+                        </td>
+                        <td>
+                            <button onclick="delete_request_data({{request_data.id}})">삭제하기</button>
+                        </td>
+                    </tr>
+                
+                    `)
+            }
+    </script>
+{% endblock %}
+
+{% else %}
+Permission denied
+{% endif %}
