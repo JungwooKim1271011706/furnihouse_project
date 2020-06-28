@@ -4,42 +4,47 @@
 
 {% if user.is_authenticated %}
 {% block content %}
+<h5>환영합니다. {{user}}님</h5>
     <form id="addRequest"action="">
         {% csrf_token %}
         <div class="form-group">
-            <input class = "form-control" type="text" name = "name" placeholder="고객명" required>
-            <input class = "form-control" type="text" name = "address" placeholder="주소" required>
-            <input class = "form-control" type="text" name = "phone_number" placeholder="수취인휴대폰" required>
-            <input class = "form-control" type="text" name = "text" placeholder="클레임 상세내역" required>
+            <input type="text" name = "name" placeholder="고객명" required>
+            <input type="text" name = "address" placeholder="주소" required>
+            <input type="text" name = "phone_number" placeholder="수취인휴대폰" required>
+            <input type="text" name = "text" placeholder="클레임 상세내역" required>
         </div>
         <button tyep="submit">등록하기</button>
     </form>
 
     <div>
         <h3>CS 요청내역(총 {{request_datas.count}} 건 있습니다.)</h3>
-        <table id="request_table">
-            <tr>
+        <table id="request_table" class="table table-striped">
+            <th><input type="checkbox" name="all" class="check_all"><label>전체선택</label></th>
             <th>작성자</th>
             <th>고객명</th>
             <th>주소</th>
             <th>연락처</th>
             <th>클레임 내용</th>
             <th>작성일자</th>
+            <th>수정</th>
+            <th>삭제</th>
             </tr>
             {% if request_datas %}
             {% for request_data in request_datas %}
                 <tr id="request_data-{{request_data.id}}">
-                    <td name="author">{{request_data.author}}</td>
-                    <td name="name">{{request_data.name}}</td>
-                    <td name="address">{{request_data.address}}</td>
-                    <td name="phone_number">{{request_data.phone_number}}</td>
-                    <td name="text">{{request_data.text|linebreaksbr}}</td>
-                    <td name="created_date">{{request_data.created_date}}</td>
+                    <td>
+                        <input type="checkbox" value="y" id="check{{request_data.id}}" class="cb">
+                    </td>
+                    <td class = "request_author request_data" name="author">{{request_data.author}}</td>
+                    <td class = "request_name request_data" name="name">{{request_data.name}}</td>
+                    <td class = "request_address request_data" name="address">{{request_data.address}}</td>
+                    <td class = "request_phone_number request_data" name="phone_number">{{request_data.phone_number}}</td>
+                    <td class = "request_text request_data" name="text">{{request_data.text|linebreaksbr}}</td>
+                    <td class = "request_created_date request_data" name="created_date">{{request_data.created_date}}</td>
                         <td>
-                            <button onclick="edit_request_data('{{request_data.id}}')">수정하기</button>
-                        </td>
+                            <button class="btn btn-success form-control" onclick="edit_request_data('{{request_data.id}}')" data-toggle="modal" data-target="#myModal">수정하기</button>                        </td>
                         <td>
-                            <button onclick="delete_request_data('{{request_data.id}}')">삭제하기</button>
+                            <button class="btn btn-danger form-control" onclick="delete_request_data('{{request_data.id}}')">삭제하기</button>
                         </td>
                 </tr>
             {% endfor %}
@@ -48,6 +53,34 @@
             {% endif %}
         </table>
     </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4 class="modal-title" id="myModalLabel">CS 수정사항</h4>
+        </div>
+        <form id="updateRequest" action="">
+            <div class="modal-body">
+                <input class="form-control" id="request-id" type="hidden" name="formid"/>
+                <label for="name">고객명</label>
+                <input class="form-control" id="request-name" type="text" name="formname"/>
+                <label for="address">주소</label>
+                <input class="form-control" id="request-address" type="text" name="formaddress"/>
+                <label for="age">연락처</label>
+                <input class="form-control" id="request-phone_number" type="text" name="formphone_number" min=10 max=100/>
+                <label for="age">클레임 내용</label>
+                <input class="form-control" id="request-text" type="text" name="formtext" min=10 max=100/>
+            </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" >수정하기</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
     {% endblock %} 
     {% block javascript %}
     <script>
@@ -78,8 +111,66 @@
                 alert("모든 필드의 값이 찼습니다.");
             }
             
-            })
-            
+            });
+        //Create Django Ajax Call
+        $("form#updateRequest").submit(function(){
+            var idinput = $('input[name="formid"]').val().trim();
+            var nameinput = $('input[name="formname"]').val().trim();
+            var addressinput = $('input[name="formaddress"]').val().trim();
+            var phone_numberinput = $('input[name="formphone_number"]').val().trim();
+            var textinput = $('input[name="formtext"]').val().trim();
+            if (nameinput && addressinput && phone_numberinput && textinput){
+                //Create Ajax Call
+                $.ajax({
+                    url : '{% url "crud_ajax_update" %}',
+                    data : {
+                        'id' : idinput,
+                        'name' : nameinput,
+                        'address' : addressinput,
+                        'phone_number' : phone_numberinput,
+                        'text' : textinput
+                    },
+                datatype : 'json',
+                success : function(data){
+                    if (data.request_data){
+                        updateRequest_data(data.request_data);
+                    }
+                }
+            }
+        );
+    }});
+            // Update Django Ajax Call
+            function edit_request_data(id){
+                if(id){
+                    tr_id = "#request_data-"+id;
+                    updatename = $(tr_id).find(".request_name").text();
+                    updateaddress = $(tr_id).find(".request_address").text();
+                    updatephone_number = $(tr_id).find(".request_phone_number").text();
+                    updatetext = $(tr_id).find(".request_text").text();
+                    updatecreated_date = $(tr_id).find(".request_created_date").text();
+                    $('#request-id').val(id);
+                    $('#request-name').val(updatename);
+                    $('#request-address').val(updateaddress);
+                    $('#request-phone_number').val(updatephone_number);
+                    $('#request-text').val(updatetext);
+                }
+            }
+
+            function updateRequest_data(request_data){
+                $('#request_table #request_data-'+request.id).children(".request_data").each(function(){
+                    var attr = $(this).attr("name");
+                    if (attr == "name"){
+                        $(this).text(request_data.name);
+                    } else if (attr == "address"){
+                        $(this).text(request_data.address);
+                    } else if (attr == "phone_number"){
+                        $(this).text(request_data.phone_number);
+                    } else if (attr == "text"){
+                        $(this).text(request_data.text);
+                    }
+                });
+            }
+
             function appendtorequesttable(request_data){
                 $("#request_table>tbody:last-child").append(`
                     <tr id="request_data${request_data.id}">
@@ -89,16 +180,33 @@
                         <td name="phone_number">${request_data.phone_number}</td>
                         <td name="text">${request_data.text}</td>
                         <td name="created_date">${request_data.created_date}</td>
-                        <td>
-                            <button onclick="edit_request_data({{request_data.id}})">수정하기</button>
-                        </td>
-                        <td>
-                            <button onclick="delete_request_data({{request_data.id}})">삭제하기</button>
-                        </td>
                     </tr>
-                
                     `)
             }
+
+            //Delete Django Ajax Call
+            function delete_request_data(id){
+                var action = confirm("정말로 삭제하시겠습니까?");
+                if (action != false){
+                    $.ajax({
+                        url : '{% url "crud_ajax_delete" %}',
+                        data : {
+                            'id' : id,
+                        },
+                        datatype : 'json',
+                        success: function(data){
+                            if (data.delete){
+                                $("request_data-" + id).remove();
+                            }
+                        }
+                    });
+                }
+            }
+            $(document).ready(function(){
+                $('.check_all').click(function(){
+                    $('.cb').prop('checked',this.checked);
+                });
+            });
     </script>
 {% endblock %}
 

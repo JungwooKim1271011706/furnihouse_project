@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.core import serializers
+from django.contrib.auth.models import User
 from django.views.generic.base import TemplateView
 from django.views.generic import View
 from django.views.generic import ListView
@@ -18,6 +19,7 @@ from django.utils import timezone
 import simplejson as json
 from django.forms.models import model_to_dict
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 
 
@@ -67,47 +69,23 @@ class RequestUpdateView(UpdateView):
 #         form.save()
 #         return super(RequestFormview, self).form_valid(form)
 
-
 class RequestDelete(DeleteView):
     model = Request
     success_url = "/cs/request/"
     context_object_name = "request_list"
 
-class UpdateRequest(View):
-    def get(self, request):
-        pk1 = request.GET.get('pk', None)
-        author1 = request.GET.get('author', None)
-        name1 = request.GET.get('name', None)
-        address1 = request.GET.get('address', None)
-        phone_number1 = request.GET.get('phone_number', None)
-        text1 = request.GET.get('text', None)
 
-        obj = Request.objects.get(pk=pk1)
-        obj.author = author1
-        obj.name = name1
-        obj.address = address1
-        obj.phone_number = phone_number1
-        obj.text = text1
-        
-        request_data = {'pk': obj.pk, 'author':obj.author, 'name':obj.name, 'address':obj.address, 'phone_number':obj.phone_number, 'text':obj.text}
-        
-        data = {
-            'request_data':request_data
-        }
-        return JsonResponse(data)
-
+@method_decorator(login_required, name="dispatch")
 class CrudView(ListView):
     model=Request
     template_name='cs/crud.html'
     context_object_name = 'request_datas'
+# index = CrudView.as_view()
 
 class CreateCrudRequest(View):
 
     def get(self, request):
-        def get_author1(request):
-            author1 = serializers.serialize('json', request.user)
-            return author1
-        get_author1(request)
+        author1 = request.user #simplelazyobject
         name1 = request.GET.get('name', None)
         address1 = request.GET.get('address', None)
         phone_number1 = request.GET.get('phone_number', None)
@@ -121,11 +99,43 @@ class CreateCrudRequest(View):
             text = text1,
         )
 
-        request_data = {'id': obj.id, 'author' : obj.author, 'name':obj.name,\
+        request_data = {'id': obj.id, 'author' : str(obj.author), 'name':obj.name,\
             'address':obj.address, 'phone_number':obj.phone_number, 'text':obj.text,\
              }
 
         data = {
             'request_data' : request_data
+        }
+        return JsonResponse(data)
+        
+class UpdateCrudRequest(View):
+    def get(self, request):
+        id1 = request.GET.get('id', None)
+        name1 = request.GET.get('name', None)
+        address1 = request.GET.get('address', None)
+        phone_number1 = request.GET.get('phone_number', None)
+        text1 = request.GET.get('text', None)
+
+        obj = Request.objects.get(id=id1)
+        # obj.author = author1
+        obj.name = name1
+        obj.address = address1
+        obj.phone_number = phone_number1
+        obj.text = text1
+        obj.save()
+        
+        request_data = {'id': obj.id, 'name':obj.name, 'address':obj.address, 'phone_number':obj.phone_number, 'text':obj.text}
+        
+        data = {
+            'request_data':request_data
+        }
+        return JsonResponse(data)
+
+class DeletCrudRequest(View):
+    def get(self, request):
+        id1 = request.GET.get('id', None)
+        Request.objects.get(id=id1).delete()
+        data = {
+            'deleted' : True
         }
         return JsonResponse(data)

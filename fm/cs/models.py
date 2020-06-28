@@ -6,6 +6,7 @@ from django.shortcuts import reverse
 # Create your models here.
 
 class Request(models.Model):
+    objects = models.Manager()
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=20)
     address = models.CharField(max_length=50)
