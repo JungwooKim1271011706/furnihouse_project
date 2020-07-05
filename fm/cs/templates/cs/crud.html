@@ -4,7 +4,9 @@
 
 {% if user.is_authenticated %}
 {% block content %}
-<h5>환영합니다. {{user}}님</h5>
+<h5>환영합니다. {{user.first_name}}님</h5>
+<a href='{% url "logout" %}'>로그아웃</a>
+
     <form id="addRequest"action="">
         {% csrf_token %}
         <div class="form-group">
@@ -17,9 +19,13 @@
     </form>
 
     <div>
-        <h3>CS 요청내역(총 {{request_datas.count}} 건 있습니다.)</h3>
+        <h3>CS 요청내역(총 {{request_datas.count}} 건 있습니다.)<select id = "option_status" name="status">
+            <option value="False">처리요망</option>
+            <option value="True">처리완료</option>
+            <option value="All">전체조회</option>
+        </select></h3>
         <table id="request_table" class="table table-striped">
-            <th><input type="checkbox" name="all" class="check_all"><label>전체선택</label></th>
+            <th>처리상태</th>
             <th>작성자</th>
             <th>고객명</th>
             <th>주소</th>
@@ -31,11 +37,17 @@
             </tr>
             {% if request_datas %}
             {% for request_data in request_datas %}
-                <tr id="request_data-{{request_data.id}}">
-                    <td>
-                        <input type="checkbox" value="y" id="check{{request_data.id}}" class="cb">
-                    </td>
-                    <td class = "request_author request_data" name="author">{{request_data.author}}</td>
+                <tr id="request_data-{{request_data.id}}" class = "{{request_data.status}}">
+                    {% if not request_data.status %}
+                        <td>
+                            <button class="btn btn-default" name="False">처리요망</button>
+                        </td>
+                    {% else %}
+                        <td>
+                            <button class="btn btn-primary" name="True">처리완료</button>
+                        </td>
+                    {% endif %}
+                    <td class = "request_author request_data" name="author">{{request_data.author.first_name}}</td>
                     <td class = "request_name request_data" name="name">{{request_data.name}}</td>
                     <td class = "request_address request_data" name="address">{{request_data.address}}</td>
                     <td class = "request_phone_number request_data" name="phone_number">{{request_data.phone_number}}</td>
@@ -195,21 +207,25 @@
                         },
                         datatype : 'json',
                         success: function(data){
-                            if (data.delete){
-                                $("request_data-" + id).remove();
+                            if (data.deleted){
+                                $("#request_data-" + id).remove();
                             }
                         }
                     });
                 }
             }
-            $(document).ready(function(){
-                $('.check_all').click(function(){
-                    $('.cb').prop('checked',this.checked);
-                });
-            });
+        // $(function(){
+        //     var test = $("#option_status option:selected").val();
+        //     $("#option_status option:selected").click(function(){
+        //         alert(test);
+
+        // }));
+        
+
     </script>
 {% endblock %}
-
 {% else %}
+
 Permission denied
+
 {% endif %}

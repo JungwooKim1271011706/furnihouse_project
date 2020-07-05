@@ -31,13 +31,13 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'cs',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cs',
 ]
 
 MIDDLEWARE = [
@@ -130,4 +130,4 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/files/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'files')
 
-# LOGIN_REDIRECT_URL ="/"
+LOGIN_REDIRECT_URL ="/cs/"

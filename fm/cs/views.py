@@ -13,7 +13,6 @@ from django.views.generic import UpdateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import MultipleObjectMixin
 from .models import Request
-from .models import vendor
 from .forms import RequestForm
 from django.utils import timezone
 import simplejson as json
@@ -80,6 +79,7 @@ class CrudView(ListView):
     model=Request
     template_name='cs/crud.html'
     context_object_name = 'request_datas'
+
 # index = CrudView.as_view()
 
 class CreateCrudRequest(View):
