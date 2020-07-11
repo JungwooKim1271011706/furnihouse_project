@@ -139,3 +139,22 @@ class DeletCrudRequest(View):
             'deleted' : True
         }
         return JsonResponse(data)
+
+class Editstatus(View):
+    def get(self, request):
+        id1 = request.GET.get('id', None)
+        obj = Request.objects.get(id=id1)
+        if obj.status is False:
+            obj.status = True
+        else:
+            obj.status = False
+        
+        obj.save()
+        request_status = {'id' : obj.id, 'status' :obj.status}
+
+        data = {
+            'request_status' : request_status
+        }
+        return JsonResponse(data)
+
+

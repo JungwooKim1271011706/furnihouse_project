@@ -40,11 +40,11 @@
                 <tr id="request_data-{{request_data.id}}" class = "{{request_data.status}}">
                     {% if not request_data.status %}
                         <td>
-                            <button class="btn btn-default" name="False">처리요망</button>
+                            <button id="requestbutton-{{request_data.id}}" class="btn btn-default" onclick="edit_status('{{request_data.id}}')">처리요망</button>
                         </td>
                     {% else %}
                         <td>
-                            <button class="btn btn-primary" name="True">처리완료</button>
+                            <button id ="requestbutton-{{request_data.id}}" class="btn btn-primary" onclick="edit_status('{{request_data.id}}')" >처리완료</button>
                         </td>
                     {% endif %}
                     <td class = "request_author request_data" name="author">{{request_data.author.first_name}}</td>
@@ -53,11 +53,13 @@
                     <td class = "request_phone_number request_data" name="phone_number">{{request_data.phone_number}}</td>
                     <td class = "request_text request_data" name="text">{{request_data.text|linebreaksbr}}</td>
                     <td class = "request_created_date request_data" name="created_date">{{request_data.created_date}}</td>
+                    {% if 
                         <td>
                             <button class="btn btn-success form-control" onclick="edit_request_data('{{request_data.id}}')" data-toggle="modal" data-target="#myModal">수정하기</button>                        </td>
                         <td>
                             <button class="btn btn-danger form-control" onclick="delete_request_data('{{request_data.id}}')">삭제하기</button>
                         </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
             {% else %}
@@ -220,6 +222,29 @@
         //         alert(test);
 
         // }));
+
+        function edit_status(id){
+            var action = confirm("CS 내역이 완료되었습니까?");
+            if( action =! false){
+                $.ajax({
+                    url : '{% url "crud_ajax_status" %}',
+                    datatype : 'JSON',
+                    data :{
+                        'id' :  id
+                    },
+                    success : function(data){
+                            var id = "requestbutton-" + data.request_status.id
+                            if ( $('#'+id).attr("class") == "btn btn-primary"  ){
+                                $('#'+id).attr("class", "btn btn-default");
+                                $('#'+id).text("처리요망")
+                            } else {
+                                $('#'+id).attr("class", "btn btn-primary");
+                                $('#'+id).text("처리완료")
+                        }
+                    }
+                })
+            }
+        }
         
 
     </script>
