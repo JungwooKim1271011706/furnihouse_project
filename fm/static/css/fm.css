@@ -26,3 +26,8 @@ p {
     width : 100%;
     
 }
+
+#logout {
+    text-align: right;
+    float : right;
+}
