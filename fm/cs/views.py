@@ -15,7 +15,6 @@ from django.views.generic.list import MultipleObjectMixin
 from .models import Request
 from .forms import RequestForm
 from django.utils import timezone
-import simplejson as json
 from django.forms.models import model_to_dict
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator

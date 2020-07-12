@@ -53,13 +53,11 @@
                     <td class = "request_phone_number request_data" name="phone_number">{{request_data.phone_number}}</td>
                     <td class = "request_text request_data" name="text">{{request_data.text|linebreaksbr}}</td>
                     <td class = "request_created_date request_data" name="created_date">{{request_data.created_date}}</td>
-                    {% if 
                         <td>
                             <button class="btn btn-success form-control" onclick="edit_request_data('{{request_data.id}}')" data-toggle="modal" data-target="#myModal">수정하기</button>                        </td>
                         <td>
                             <button class="btn btn-danger form-control" onclick="delete_request_data('{{request_data.id}}')">삭제하기</button>
                         </td>
-                    {% endif %}
                 </tr>
             {% endfor %}
             {% else %}
