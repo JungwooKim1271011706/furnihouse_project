@@ -10,10 +10,12 @@
     <form id="addRequest"action="">
         {% csrf_token %}
         <div class="form-group">
-            <input type="text" name = "name" placeholder="고객명" required>
-            <input type="text" name = "address" placeholder="주소" required>
-            <input type="text" name = "phone_number" placeholder="수취인휴대폰" required>
-            <input type="text" name = "text" placeholder="클레임 상세내역" required>
+            <input type="text" id = "textcheck_name" name = "name" placeholder="고객명" required>
+            <input type="text" id = "textcheck_address" name = "address" placeholder="주소" required>
+            <input type="text" id = "textcheck_phone_number" name = "phone_number" placeholder="수취인휴대폰" required>
+        </div>
+        <div>
+            <textarea type="text" id = "textcheck_text" name = "text" placeholder="클레임 상세내역" form="addRequest" cols="40" rows="5" required></textarea>
         </div>
         <button tyep="submit">등록하기</button>
     </form>
@@ -24,17 +26,19 @@
             <option value="True">처리완료</option>
             <option value="All">전체조회</option>
         </select></h3>
+        <input type="text" id = "search_data" placeholder="검색어를 입력하세요.">
         <table id="request_table" class="table table-striped">
-            <th>처리상태</th>
-            <th>작성자</th>
-            <th>고객명</th>
-            <th>주소</th>
-            <th>연락처</th>
-            <th>클레임 내용</th>
-            <th>작성일자</th>
-            <th>수정</th>
-            <th>삭제</th>
-            </tr>
+            <thead>
+                <th>처리상태</th>
+                <th>작성자</th>
+                <th>고객명</th>
+                <th>주소</th>
+                <th>연락처</th>
+                <th>클레임 내용</th>
+                <th>작성일자</th>
+                <th>수정</th>
+                <th>삭제</th>
+            </thead>
             {% if request_datas %}
             {% for request_data in request_datas %}
                 <tr id="request_data-{{request_data.id}}" class = "{{request_data.status}}">
@@ -51,19 +55,20 @@
                     <td class = "request_name request_data" name="name">{{request_data.name}}</td>
                     <td class = "request_address request_data" name="address">{{request_data.address}}</td>
                     <td class = "request_phone_number request_data" name="phone_number">{{request_data.phone_number}}</td>
-                    <td class = "request_text request_data" name="text"><a data-toggle="collapse" data-parent="#accordion" href="#request_data_text-{{request_data.id}}" aria-expanded="true" aria-controls="collapseOne" >{{request_data.text|truncatewords:30}}</a></td>
+                    <td class = "request_text request_data" name="text"><a id="request_data_text_window-{{request_data.id}}" href ="#request_data_text-{{request_data.id}}" onclick="$('#request_data_text-{{request_data.id}}').toggle()">{{request_data.text|truncatechars:10}}</a></td>
                     <td class = "request_created_date request_data" name="created_date">{{request_data.created_date}}</td>
                         <td>
-                        {% if user == request_data.author %}
-                            <button class="btn btn-success form-control" onclick="edit_request_data('{{request_data.id}}')" data-toggle="modal" data-target="#myModal">수정하기</button>                        
-                        {% endif %}
-                        </td>
-                        <td>
-                        {% if user == request_data.author %}
-                            <button class="btn btn-danger form-control" onclick="delete_request_data('{{request_data.id}}')">삭제하기</button>
-                        {% endif %}
-                    </td>
+                            {% if user == request_data.author %}
+                                <button class="btn btn-success form-control" onclick="edit_request_data('{{request_data.id}}')" data-toggle="modal" data-target="#myModal">수정하기</button>                        
+                            {% endif %}
+                            </td>
+                            <td>
+                            {% if user == request_data.author %}
+                                <button class="btn btn-danger form-control" onclick="delete_request_data('{{request_data.id}}')">삭제하기</button>
+                            {% endif %}
+                            </td>
                 </tr>
+                <td class="request_data_text_detail"id="request_data_text-{{request_data.id}}">{{request_data.text}}</td>
             {% endfor %}
             {% else %}
                 클레임 내역이 없습니다.
@@ -106,7 +111,7 @@
             var nameinput = $('input[name="name"]').val().trim();
             var addressinput = $('input[name="address"]').val().trim();
             var phone_numberinput = $('input[name="phone_number"]').val().trim();
-            var textinput = $('input[name="text"]').val().trim();
+            var textinput = $('textarea[name="text"]').val().trim();
             if (nameinput && addressinput && phone_numberinput && textinput){
                 //Create Ajax Call
                 $.ajax({
@@ -219,12 +224,6 @@
                     });
                 }
             }
-        // $(function(){
-        //     var test = $("#option_status option:selected").val();
-        //     $("#option_status option:selected").click(function(){
-        //         alert(test);
-
-        // }));
 
         function edit_status(id){
             var action = confirm("CS 내역이 완료되었습니까?");
@@ -249,7 +248,13 @@
             }
         }
         
+        $('#search_data').on("propertychange change keyup paste input", function(){
+            var newValue = $(this).val();
+            $('#request_table>tbody>tr').hide();
+            var temp = $("#request_table>tbody>tr>td:nth-child(n):contains('"  + newValue +  "')");
+            $(temp).parent().show();
 
+            });
     </script>
 {% endblock %}
 {% else %}

@@ -31,3 +31,7 @@ p {
     text-align: right;
     float : right;
 }
+
+.request_data_text_detail {
+    display: none;
+}
