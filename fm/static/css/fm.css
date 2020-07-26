@@ -35,3 +35,8 @@ p {
 .request_data_text_detail {
     display: none;
 }
+
+.header{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+}

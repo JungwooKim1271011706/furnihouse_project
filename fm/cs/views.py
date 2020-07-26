@@ -13,6 +13,7 @@ from django.views.generic import UpdateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import MultipleObjectMixin
 from .models import Request
+from .models import Notion
 from .forms import RequestForm
 from django.utils import timezone
 from django.forms.models import model_to_dict
@@ -157,3 +158,8 @@ class Editstatus(View):
         return JsonResponse(data)
 
 
+# @method_decorator(login_required, name="dispatch")
+# class NotionView(ListView):
+#     model = Notion
+#     template_name = 'cs/crud.html'
+#     context_object_name = 'notions'

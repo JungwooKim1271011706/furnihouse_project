@@ -6,22 +6,43 @@
 {% if user.is_authenticated %}
 {% block content %}
 <h3><a id ="logout" href='{% url "logout" %}'>로그아웃</a></h3>
-<h4>환영합니다. {{user.first_name}}님</h4>
-    <form id="addRequest"action="">
-        {% csrf_token %}
-        <div class="form-group">
-            <input type="text" id = "textcheck_name" name = "name" placeholder="고객명" required>
-            <input type="text" id = "textcheck_address" name = "address" placeholder="주소" required>
-            <input type="text" id = "textcheck_phone_number" name = "phone_number" placeholder="수취인휴대폰" required>
-        </div>
-        <div>
-            <textarea type="text" id = "textcheck_text" name = "text" placeholder="클레임 상세내역" form="addRequest" cols="40" rows="5" required></textarea>
-        </div>
-        <button tyep="submit">등록하기</button>
-    </form>
+<div class ="header">
+    <div class ="header_left">
+        <h4>환영합니다. {{user.first_name}}님</h4>
+            <form id="addRequest"action="">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" id = "textcheck_name" name = "name" placeholder="고객명" required>
+                    <input type="text" id = "textcheck_address" name = "address" placeholder="주소" required>
+                    <input type="text" id = "textcheck_phone_number" name = "phone_number" placeholder="수취인휴대폰" required>
+                </div>
+                <div>
+                    <textarea type="text" id = "textcheck_text" name = "text" placeholder="클레임 상세내역" form="addRequest" cols="40" rows="5" required></textarea>
+                </div>
+                <button tyep="submit">등록하기</button>
+            </form>
+    </div>
+    <div class="header_right">
+        <h3>공지사항</h3>
+            <div>
+                {% if notions %}
+                {% for notion in notions %}
+                    <li>
+                        {{notion.post}}
+                    </li>
+                {% endfor %}
+                {% endif %}
+            </div>
+    </div>
+</div>
+
 
     <div>
-        <h3>CS 요청내역(총 {{request_datas.count}} 건 있습니다.)<select id = "option_status" name="status">
+        <h3>CS 요청내역(총 {{request_datas.count}} 건 있습니다.)
+            {% if request_datas.status %}
+            처리할 내역은 총 {{request_datas.count}} 건 있습니다.
+            {% endif %}
+            <select id = "option_status" name="status">
             <option value="False">처리요망</option>
             <option value="True">처리완료</option>
             <option value="All">전체조회</option>
@@ -68,7 +89,9 @@
                             {% endif %}
                             </td>
                 </tr>
-                <td class="request_data_text_detail"id="request_data_text-{{request_data.id}}">{{request_data.text}}</td>
+                <tr>
+                    <td class="request_data_text_detail" id="request_data_text-{{request_data.id}}">{{request_data.text}}</td>
+                </tr>
             {% endfor %}
             {% else %}
                 클레임 내역이 없습니다.
@@ -168,7 +191,7 @@
                     updatename = $(tr_id).find(".request_name").text();
                     updateaddress = $(tr_id).find(".request_address").text();
                     updatephone_number = $(tr_id).find(".request_phone_number").text();
-                    updatetext = $(tr_id).find(".request_text").text();
+                    updatetext = $('#request_data_text-'+id).text();
                     updatecreated_date = $(tr_id).find(".request_created_date").text();
                     $('#request-id').val(id);
                     $('#request-name').val(updatename);
@@ -253,8 +276,12 @@
             $('#request_table>tbody>tr').hide();
             var temp = $("#request_table>tbody>tr>td:nth-child(n):contains('"  + newValue +  "')");
             $(temp).parent().show();
-
+            
             });
+
+  
+    
+
     </script>
 {% endblock %}
 {% else %}
