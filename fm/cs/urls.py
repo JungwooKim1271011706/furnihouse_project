@@ -11,6 +11,7 @@ urlpatterns =[
     path('test1/ajax/delete/', views.DeletCrudRequest.as_view(), name='crud_ajax_delete'),
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('test1/ajax/updatestatus/', views.Editstatus.as_view(), name="crud_ajax_status")
+    path('test1/ajax/updatestatus/', views.Editstatus.as_view(), name="crud_ajax_status"),
+
 
 ]

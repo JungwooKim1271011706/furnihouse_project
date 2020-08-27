@@ -9,7 +9,7 @@
 <div class ="header">
     <div class ="header_left">
         <h4>환영합니다. {{user.first_name}}님</h4>
-            <form id="addRequest"action="">
+            <form id="addRequest" action="">
                 {% csrf_token %}
                 <div class="form-group">
                     <input type="text" id = "textcheck_name" name = "name" placeholder="고객명" required>
@@ -25,17 +25,25 @@
     <div class="header_right">
         <h3>공지사항</h3>
             <div>
+                asdadsdasd
                 {% if notions %}
                 {% for notion in notions %}
-                    <li>
+                    <P>
                         {{notion.post}}
-                    </li>
+                    </P>
                 {% endfor %}
                 {% endif %}
             </div>
     </div>
 </div>
 
+<div>
+    코멘트 불러오기
+<!-- {% if request.comments %}
+{% for comments in request.comments %}
+{% endfor %}
+{% endif %} -->
+</div>
 
     <div>
         <h3>CS 요청내역(총 {{request_datas.count}} 건 있습니다.)
@@ -90,7 +98,8 @@
                             </td>
                 </tr>
                 <tr>
-                    <td class="request_data_text_detail" id="request_data_text-{{request_data.id}}">{{request_data.text}}</td>
+                    <td class="request_data_text_detail" id="request_data_text-{{request_data.id}}">{{request_data.text}}
+                    </td>
                 </tr>
             {% endfor %}
             {% else %}
@@ -279,8 +288,8 @@
             
             });
 
-  
-    
+ 
+      
 
     </script>
 {% endblock %}

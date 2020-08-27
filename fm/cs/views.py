@@ -158,8 +158,27 @@ class Editstatus(View):
         return JsonResponse(data)
 
 
-# @method_decorator(login_required, name="dispatch")
-# class NotionView(ListView):
-#     model = Notion
-#     template_name = 'cs/crud.html'
-#     context_object_name = 'notions'
+# class CreateCrudComment(View):
+#     def get(self, request):
+#         text1 = request.GEt.get('text', None)
+#         author1 = request.user
+#         obj = Comment.objects.create(
+#             text = text1,
+#             author = author1,
+#         )
+
+#         comment_data = {'id': obj.id, 'author' : str(obj.author),
+#             'text':obj.text,\
+#                 }
+
+#         data = {
+#             'comment_data' : comment_data
+#         }
+#         return JsonResponse(data)
+
+
+@method_decorator(login_required, name="dispatch")
+class NotionView(ListView):
+    model = Notion
+    template_name = 'cs/crud.html'
+    context_object_name = 'notions'

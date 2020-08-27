@@ -1,7 +1,6 @@
 from django.contrib import admin
-from cs.models import Request, Comment, Notion
+from cs.models import Request, Notion
 # Register your models here.
 
 admin.site.register(Request)
-admin.site.register(Comment)
 admin.site.register(Notion)
