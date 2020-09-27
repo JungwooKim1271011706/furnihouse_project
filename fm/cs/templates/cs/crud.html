@@ -49,12 +49,17 @@
         <h3>CS 요청내역(총 {{request_datas.count}} 건 있습니다.)
             {% if request_datas.status %}
             처리할 내역은 총 {{request_datas.count}} 건 있습니다.
-            {% endif %}
-            <select id = "option_status" name="status">
-            <option value="False">처리요망</option>
-            <option value="True">처리완료</option>
-            <option value="All">전체조회</option>
-        </select></h3>
+            {% endif %}</h3>
+            <form id = "option_form" action="">{% csrf_token %}
+                <select id = "option_status" name="status">
+                    <h3>
+                        <option value="False" selected>처리요망</option>
+                        <option value="True" >처리완료</option>
+                        <option value="All">전체조회</option>
+                    </h3>
+                </select>
+            </form>
+
         <input type="text" id = "search_data" placeholder="검색어를 입력하세요.">
         <table id="request_table" class="table table-striped">
             <thead>
@@ -280,13 +285,41 @@
             }
         }
         
+
+// 현재 비동기로 데이터를 보여주는건 가능하지만, 이 경우 클레임 내용에 있는 a태그에 대한 show가 안됨
+        // $('#option_status').change(function(){
+        //     var state = $('#option_status option:selected').text();
+        //     $('#request_table>tbody>tr').hide();
+        //     var selected_state = $("#request_table>tbody>tr>td:nth-child(1):contains('"  + state +  "')");
+        //     $(selected_state).parent().show();
+        // })
+
+
+       $(function(){
+            $('#option_status').change(function(){
+                alert('선택값 적용 함수 시작');
+                //$('#option_status').children("option:selected").val();
+                localStorage.seleted_value = $('#option_status').children("option:selected").val();
+                // localStorage 사용
+                $('#option_form').submit();
+                }
+            );
+            $('#option_status').val(localStorage.seleted_value);
+        }
+    );// end of function()
+
         $('#search_data').on("propertychange change keyup paste input", function(){
             var newValue = $(this).val();
             $('#request_table>tbody>tr').hide();
             var temp = $("#request_table>tbody>tr>td:nth-child(n):contains('"  + newValue +  "')");
-            $(temp).parent().show();
+                    $(temp).parent().show();
+                
+                
+
+                });
             
-            });
+           
+            
 
  
       

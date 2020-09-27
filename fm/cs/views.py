@@ -74,13 +74,30 @@ class RequestDelete(DeleteView):
     context_object_name = "request_list"
 
 
+
 @method_decorator(login_required, name="dispatch")
 class CrudView(ListView):
-    model=Request
     template_name='cs/crud.html'
     context_object_name = 'request_datas'
 
-# index = CrudView.as_view()
+    def get_queryset(self):
+        query = self.request.GET.get('status', None)
+        if query == 'False':
+            queryset = Request.objects.filter(status=False)
+            return queryset
+        elif query == 'True':
+            queryset = Request.objects.filter(status=True)
+            return queryset
+        elif query == 'All':
+            queryset = Request.objects.all()
+            return queryset
+        else:
+            queryset = Request.objects.filter(status=False)
+            return queryset
+        
+
+
+
 
 class CreateCrudRequest(View):
 
