@@ -297,8 +297,6 @@
 
        $(function(){
             $('#option_status').change(function(){
-                alert('선택값 적용 함수 시작');
-                //$('#option_status').children("option:selected").val();
                 localStorage.seleted_value = $('#option_status').children("option:selected").val();
                 // localStorage 사용
                 $('#option_form').submit();
