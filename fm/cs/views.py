@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.core import serializers
@@ -26,9 +26,6 @@ from django.utils.decorators import method_decorator
 
 def login(request):
     return render(request, 'registration/login.html')
-
-class vendorview(TemplateView):
-    template_name = "cs/vendor_list.html"
 
 class Requestview(MultipleObjectMixin, CreateView):
     model = Request
@@ -58,22 +55,10 @@ class RequestUpdateView(UpdateView):
         field = ['text']
         template_name_suffix = ""
 
-
-# class RequestFormview(FormView):
-#     form_class = RequestForm
-#     template_name = "cs/request.html"
-#     success_url = "/cs/request/"
-
-#     def form_valid(self, form):
-#         form.save()
-#         return super(RequestFormview, self).form_valid(form)
-
 class RequestDelete(DeleteView):
     model = Request
     success_url = "/cs/request/"
     context_object_name = "request_list"
-
-
 
 @method_decorator(login_required, name="dispatch")
 class CrudView(ListView):
@@ -82,27 +67,20 @@ class CrudView(ListView):
 
     def get_queryset(self):
         query = self.request.GET.get('status', None)
-        if query == 'False':
-            queryset = Request.objects.filter(status=False)
-            return queryset
-        elif query == 'True':
-            queryset = Request.objects.filter(status=True)
-            return queryset
-        elif query == 'All':
+        if query == 'All' :
             queryset = Request.objects.all()
+            return queryset
+        elif query == 'True' :
+            queryset = Request.objects.filter(status=True)
             return queryset
         else:
             queryset = Request.objects.filter(status=False)
             return queryset
-        
-
-
-
-
+           
 class CreateCrudRequest(View):
 
     def get(self, request):
-        author1 = request.user #simplelazyobject
+        author1 = request.user
         name1 = request.GET.get('name', None)
         address1 = request.GET.get('address', None)
         phone_number1 = request.GET.get('phone_number', None)
@@ -134,7 +112,6 @@ class UpdateCrudRequest(View):
         text1 = request.GET.get('text', None)
 
         obj = Request.objects.get(id=id1)
-        # obj.author = author1
         obj.name = name1
         obj.address = address1
         obj.phone_number = phone_number1
@@ -173,26 +150,6 @@ class Editstatus(View):
             'request_status' : request_status
         }
         return JsonResponse(data)
-
-
-# class CreateCrudComment(View):
-#     def get(self, request):
-#         text1 = request.GEt.get('text', None)
-#         author1 = request.user
-#         obj = Comment.objects.create(
-#             text = text1,
-#             author = author1,
-#         )
-
-#         comment_data = {'id': obj.id, 'author' : str(obj.author),
-#             'text':obj.text,\
-#                 }
-
-#         data = {
-#             'comment_data' : comment_data
-#         }
-#         return JsonResponse(data)
-
 
 @method_decorator(login_required, name="dispatch")
 class NotionView(ListView):

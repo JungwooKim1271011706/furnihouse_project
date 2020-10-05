@@ -3,7 +3,6 @@ from . import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns =[
-    path('1111', views.vendorview.as_view(), name='vendor'),
     path('request/', views.Requestview.as_view(), name='request_merge'),
     path('', views.CrudView.as_view(), name='crud_ajax'),
     path('test1/ajax/crud/create/', views.CreateCrudRequest.as_view(), name='crud_ajax_create'), 

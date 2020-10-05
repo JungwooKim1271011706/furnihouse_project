@@ -10,7 +10,6 @@
     <div class ="header_left">
         <h4>환영합니다. {{user.first_name}}님</h4>
             <form id="addRequest" action="">
-                {% csrf_token %}
                 <div class="form-group">
                     <input type="text" id = "textcheck_name" name = "name" placeholder="고객명" required>
                     <input type="text" id = "textcheck_address" name = "address" placeholder="주소" required>
@@ -51,7 +50,7 @@
             {% if request_datas.status %}
             처리할 내역은 총 {{request_datas.count}} 건 있습니다.
             {% endif %}</h3>
-            <form id = "option_form" action="">{% csrf_token %}
+            <form id = "option_form" method = "GET" action="">
                 <select id = "option_status" name="status">
                     <h3>
                         <option value="False" selected>처리요망</option>
